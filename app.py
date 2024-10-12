@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///villain.db"
 db = SQLAlchemy(app)
-
 
 class Villain(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,7 +18,7 @@ class Villain(db.Model):
 
     def __repr__(self):
         return "<Villain "+ self.name + ">"
-
+        
 with app.app_context():
 	db.create_all()
 	db.session.commit()
@@ -40,43 +39,47 @@ def delete():
 
 @app.route("/api/villains/", methods=["GET"])
 def get_villains():
-   villains=Villain.query.all()
-   data = []
-   return
+  villains=Villain.query.all()
+  data = []
+  return
 
-@app.route("/add/villains/add", methods=["POST"])
+@app.route("/api/villains/add", methods=["POST"])
 def add_villain():
-  errors = []
-  name = request.form.get("name")
+ errors = []
+ name = request.form.get("name", "")
 
-  if not name:
-    errors.append("Oops! Looks like you forgot a name!")
-
-  description = request.form.get("description")
+ if not name:
+  errors.append("Oops! Looks like you forgot a name!")
+  
+  description = request.form.get("description", "")
   if not description:
     errors.append("Oops! Looks like you forgot a description!")
   
-  interests = request.form.get("interests")
+  interests = request.form.get("interests", "")
   if not interests:
     errors.append("Oops! Looks like you forgot some interests!")
   
-  url = request.form.get("url")
+  url = request.form.get("url", "")
   if not url:
     errors.append("Oops! Looks like you forgot an image!")
-  
+      
   villain = Villain.query.filter_by(name=name).first()
   if villain:
     errors.append("Oops! A villain with that name already exists!")
-  
+      
   if errors:
     return jsonify({"errors": errors})
   else:
-    new_villain = Villain(name=name,description=description, interests=interests, url=url)
+    new_villain = Villain(name=name,
+    description=description,
+    interests=interests,
+    url=url
+    )
     db.session.add(new_villain)
     db.session.commit()
     return 
 
-@app.route("/api/villains/delete", methods=["POST"])
+@app.route("/api/villains/delete/", methods=["POST"])
 def delete_villain():
   name = request.form.get("name", "")
   villain = Villain.query.filter_by(name=name).first()
@@ -87,6 +90,14 @@ def delete_villain():
   else:
     return jsonify({"errors": ["Oops! A villain with that name doesn't exist!"]})
 
+@app.route("/api/", methods=["GET"])
+def get_endpoints():
+    endpoints = {
+        "/api/villains/": "GET - Retrieves all villain data from the database",
+        "/api/villains/delete": "POST - Deletes a single villain if the villain exists in the database",
+        "/api/villains/add": "POST - Adds a single villain to the database"
+    }
+    return jsonify(endpoints)
 
 # Run the flask server
 if __name__ == "__main__":
