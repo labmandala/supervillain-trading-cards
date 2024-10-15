@@ -53,11 +53,11 @@ def get_villains():
 
 @app.route("/api/villains/add", methods=["POST"])
 def add_villain():
- errors = []
- name = request.form.get("name", "")
+  errors = []
+  name = request.form.get("name", "")
 
- if not name:
-  errors.append("Oops! Looks like you forgot a name!")
+  if not name:
+    errors.append("Oops! Looks like you forgot a name!")
   
   description = request.form.get("description", "")
   if not description:
@@ -70,11 +70,11 @@ def add_villain():
   url = request.form.get("url", "")
   if not url:
     errors.append("Oops! Looks like you forgot an image!")
-      
+     
   villain = Villain.query.filter_by(name=name).first()
   if villain:
     errors.append("Oops! A villain with that name already exists!")
-      
+
   if errors:
     return jsonify({"errors": errors})
   else:
