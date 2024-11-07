@@ -1,3 +1,13 @@
+<h1>Female Supervillain Trading Cards App - REST API Version</h1>
+
+<p>An interactive female supervillain trading card app where users can collect cards, remove cards and create new ones from a database of custom-designed cards of original supervillain female characters.</p>
+
+<p>This is the REST API version of the Female Supervillain Trading Card app. Built using Python, Flask, REST API routes and endpoints, and conversion of data to JSON objects.</p>
+
+<img src=villain-app.png />
+
+Play the Game:
+
 # Install Python
 
 Check to see if you already have Python installed on your system by running:
